@@ -1,0 +1,27 @@
+ahashpool:
+  name: AHashPool
+  endpoint: http://www.ahashpool.com/api/wallet?address={walletAddress}
+  fields:
+    - unsold
+    - balance
+    - unpaid
+    - paid24h
+    - total
+zpool:
+  name: ZPool
+  endpoint: http://www.zpool.ca/api/wallet?address={walletAddress}
+  fields:
+    - unsold
+    - balance
+    - unpaid
+    - paid24h
+    - total
+hashrefinery:
+  name: HashRefinery
+  endpoint: http://pool.hashrefinery.com/api/wallet?address={walletAddress}
+  fields:
+    - unsold
+    - balance
+    - unpaid
+    - paid24h
+    - total
