@@ -36,7 +36,7 @@ class Winty(object):
             for wallet in wallets:
                 data = self.scrape_wallet_data(config, wallet)
                 for (metric_name, metric_value) in data.items():
-                             
+
                     values_dict = {}
                     tags_dict = {}
 
@@ -53,7 +53,7 @@ class Winty(object):
             config = yaml.load(stream)
             return config
         except Exception as e:
-            logger.error('Failed to open file', exc_info=True)
+            self.logger.error('Failed to open file', exc_info=True)
 
 
     def read_wallet_addresses(self, filepath):
@@ -62,7 +62,7 @@ class Winty(object):
             wallets = yaml.load(stream)
             return wallets['addresses']
         except Exception as e:
-            logger.error('Failed to open file', exc_info=True)
+            self.logger.error('Failed to open file', exc_info=True)
 
 
     def scrape_wallet_data(self, pool_config, wallet_address):
@@ -81,4 +81,3 @@ class Winty(object):
 if __name__ == '__main__':
     w = Winty()
     w.scrape_data()
-    

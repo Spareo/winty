@@ -4,9 +4,9 @@ ahashpool:
   fields:
     - unsold
     - balance
-    - unpaid
-    - paid24h
-    - total
+    - total_unpaid
+    - total_paid
+    - total_earned
   format: 24H
 zpool:
   name: ZPool
