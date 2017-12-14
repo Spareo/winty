@@ -68,13 +68,18 @@ class Winty(object):
     def scrape_wallet_data(self, pool_config, wallet_address):
         wallet = None
         r = requests.get(pool_config['endpoint'].format(walletAddress=wallet_address))
-        if r.status_code == 200:
-            self.logger.debug("Retrieved wallet for %s", wallet_address)
-            wallet = r.json()
-        else:
-            self.logger.error("Failed to retrieve wallet data from %s for wallet %s", pool_config['name'], wallet_address)
+        try:
+            if r.status_code == 200:
+                self.logger.debug("Retrieved wallet for %s", wallet_address)
+                wallet = r.json()
+            else:
+                self.logger.error("Failed to retrieve wallet data from %s for wallet %s", pool_config['name'], wallet_address)
 
-        wallet = {key: value for (key, value) in wallet.items() if key in pool_config['fields']}
+            wallet = {key: value for (key, value) in wallet.items() if key in pool_config['fields'].keys()}
+        except Exception as e:
+            # No need to do anything, just let the job run again next time
+            pass
+
         return wallet
 
 
