@@ -41,6 +41,7 @@ class Winty(object):
 
                     values_dict['value'] = metric_value
                     tags_dict['format'] = config['format']
+                    tags_dict['pool'] = config['name']
 
                     self.metricsHandler.write_metric(metric_name, values_dict, tags_dict)
 
