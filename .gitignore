@@ -103,3 +103,6 @@ ENV/
 # vscode
 .vscode/
 .DS_Store
+
+# log
+winty_log
