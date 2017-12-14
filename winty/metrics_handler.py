@@ -19,10 +19,10 @@ class MetricsHandler(object):
             client = InfluxDBClient(config['host'], config['port'], config['username'], config['password'], config['dbname'])
             return client
         except InfluxDBClientError:
-            logger.error("Failed to connect to InfluxDB", exc_info=True)
+            self.logger.error("Failed to connect to InfluxDB", exc_info=True)
         except Exception as e:
-            logger.error('Failed to open file', exc_info=True)
-        
+            self.logger.error('Failed to open file', exc_info=True)
+
 
     def write_metric(self, metric_name, values_dict, tags_dict, time=None):
         metric = {}
@@ -41,8 +41,8 @@ class MetricsHandler(object):
         metric['time'] = datetime.utcnow().isoformat()
         metric['fields'] = values_dict
         if not self.influxDbClient.write_points(json_body):
-            logger.error("Failed to write data to db", exc_info=True)
-        
+            self.logger.error("Failed to write data to db", exc_info=True)
+
 
 if __name__ == '__main__':
     # w = MetricsHandler(None)

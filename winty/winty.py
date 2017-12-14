@@ -44,7 +44,7 @@ class Winty(object):
                     tags_dict['format'] = config['format']
                     tags_dict['pool'] = config['name']
 
-                    self.metricsHandler.write_metric(metric_name, values_dict, tags_dict)
+                    self.metricsHandler.write_metric(config['fields'][metric_name], values_dict, tags_dict)
 
 
     def read_pools_config(self, filepath):
