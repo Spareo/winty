@@ -3,12 +3,12 @@ import random
 from influxdb import InfluxDBClient
 from influxdb.client import InfluxDBClientError
 from datetime import datetime, timedelta
-
+import os
 
 class MetricsHandler(object):
     def __init__(self, logger):
         self.logger = logger
-        self.influxDbClient = self.get_influxdb_client('winty/influxdb.yaml')
+        self.influxDbClient = self.get_influxdb_client(os.path.dirname(os.path.abspath(__file__)) + '/influxdb.yaml')
 
 
     def get_influxdb_client(self, filepath):

@@ -1,6 +1,7 @@
 import requests
 import yaml
 import logging
+import os
 from metrics_handler import MetricsHandler
 from logging.handlers import TimedRotatingFileHandler
 
@@ -28,8 +29,8 @@ class Winty(object):
 
 
     def scrape_data(self):
-        pool_configs = self.read_pools_config('winty/pools.yaml')
-        wallets = self.read_wallet_addresses('winty/wallets.yaml')
+        pool_configs = self.read_pools_config(os.path.dirname(os.path.abspath(__file__)) + '/pools.yaml')
+        wallets = self.read_wallet_addresses(os.path.dirname(os.path.abspath(__file__)) + '/wallets.yaml')
 
         for config in pool_configs.values():
             for wallet in wallets:
@@ -80,3 +81,4 @@ class Winty(object):
 if __name__ == '__main__':
     w = Winty()
     w.scrape_data()
+    
