@@ -7,6 +7,7 @@ ahashpool:
     - unpaid
     - paid24h
     - total
+  format: 24H
 zpool:
   name: ZPool
   endpoint: http://www.zpool.ca/api/wallet?address={walletAddress}
@@ -16,6 +17,7 @@ zpool:
     - unpaid
     - paid24h
     - total
+  format: 24H
 hashrefinery:
   name: HashRefinery
   endpoint: http://pool.hashrefinery.com/api/wallet?address={walletAddress}
@@ -25,3 +27,4 @@ hashrefinery:
     - unpaid
     - paid24h
     - total
+  format: 24H

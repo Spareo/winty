@@ -1,11 +1,13 @@
 import requests
 import yaml
 import logging
+from metrics_handler import MetricsHandler
 from logging.handlers import TimedRotatingFileHandler
 
 class Winty(object):
     def __init__(self):
         self.setup_logger()
+        self.metricsHandler = MetricsHandler(self.logger)
 
     def setup_logger(self):
         logger = logging.getLogger(__name__)
@@ -25,11 +27,38 @@ class Winty(object):
         self.logger = logger
 
 
+    def scrape_data(self):
+        pool_configs = self.read_pools_config('winty/pools.yaml')
+        wallets = self.read_wallet_addresses('winty/wallets.yaml')
+
+        for config in pool_configs.values():
+            for wallet in wallets:
+                data = self.scrape_wallet_data(config, wallet)
+                for (metric_name, metric_value) in data.items():
+                             
+                    values_dict = {}
+                    tags_dict = {}
+
+                    values_dict['value'] = metric_value
+                    tags_dict['format'] = config['format']
+
+                    self.metricsHandler.write_metric(metric_name, values_dict, tags_dict)
+
+
     def read_pools_config(self, filepath):
         try:
             stream = open(filepath, "r")
             config = yaml.load(stream)
             return config
+        except Exception as e:
+            logger.error('Failed to open file', exc_info=True)
+
+
+    def read_wallet_addresses(self, filepath):
+        try:
+            stream = open(filepath, "r")
+            wallets = yaml.load(stream)
+            return wallets['addresses']
         except Exception as e:
             logger.error('Failed to open file', exc_info=True)
 
@@ -49,6 +78,4 @@ class Winty(object):
 
 if __name__ == '__main__':
     w = Winty()
-    
-    config = w.read_pools_config('winty/pools.yaml')
-    w.scrape_wallet_data(config['ahashpool'], '1AWV5n8oDChuympDM78B57X525SZtgeK1W')
+    w.scrape_data()
