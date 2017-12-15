@@ -6,9 +6,10 @@ from metrics_handler import MetricsHandler
 from logging.handlers import TimedRotatingFileHandler
 
 class Winty(object):
-    def __init__(self):
+    def __init__(self, name):
         self.setup_logger()
         self.metricsHandler = MetricsHandler(self.logger)
+        self.name = name
 
     def setup_logger(self):
         logger = logging.getLogger(__name__)
@@ -35,16 +36,17 @@ class Winty(object):
         for config in pool_configs.values():
             for wallet in wallets:
                 data = self.scrape_wallet_data(config, wallet)
+
+                values_dict = {}
+                tags_dict = {}
+
                 for (metric_name, metric_value) in data.items():
+                    values_dict[config['fields'][metric_name]] = metric_value
 
-                    values_dict = {}
-                    tags_dict = {}
+                tags_dict['format'] = config['format']
+                tags_dict['pool'] = config['name']
 
-                    values_dict['value'] = metric_value
-                    tags_dict['format'] = config['format']
-                    tags_dict['pool'] = config['name']
-
-                    self.metricsHandler.write_metric(config['fields'][metric_name], values_dict, tags_dict)
+                self.metricsHandler.write_metric(self.name, values_dict, tags_dict)
 
 
     def read_pools_config(self, filepath):
@@ -84,5 +86,5 @@ class Winty(object):
 
 
 if __name__ == '__main__':
-    w = Winty()
+    w = Winty("Winty")
     w.scrape_data()
