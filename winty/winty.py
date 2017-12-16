@@ -3,6 +3,7 @@ import yaml
 import logging
 import os
 from metrics_handler import MetricsHandler
+from metrics_scraper import MetricsScraper
 from logging.handlers import TimedRotatingFileHandler
 
 class Winty(object):
@@ -29,19 +30,25 @@ class Winty(object):
         self.logger = logger
 
 
-    def scrape_data(self):
+    def run(self):
         pool_configs = self.read_pools_config(os.path.dirname(os.path.abspath(__file__)) + '/pools.yaml')
         wallets = self.read_wallet_addresses(os.path.dirname(os.path.abspath(__file__)) + '/wallets.yaml')
 
         for config in pool_configs.values():
             for wallet in wallets:
-                data = self.scrape_wallet_data(config, wallet)
+                
+                if config['datasource'] == "rest":
+                    data = self.get_wallet_data(config, wallet)
+                else:
+                    data = self.scrape_wallet_data(config, wallet)
 
                 values_dict = {}
                 tags_dict = {}
 
+                # Set the metric name to use the value from the fields dictionary in pools.yaml
                 for (metric_name, metric_value) in data.items():
-                    values_dict[config['fields'][metric_name]] = metric_value
+                    if metric_name in config['fields']:
+                        values_dict[config['fields'][metric_name]] = metric_value
 
                 tags_dict['format'] = config['format']
                 tags_dict['pool'] = config['name']
@@ -67,7 +74,7 @@ class Winty(object):
             self.logger.error('Failed to open file', exc_info=True)
 
 
-    def scrape_wallet_data(self, pool_config, wallet_address):
+    def get_wallet_data(self, pool_config, wallet_address):
         wallet = None
         r = requests.get(pool_config['endpoint'].format(walletAddress=wallet_address))
         try:
@@ -85,6 +92,12 @@ class Winty(object):
         return wallet
 
 
+    def scrape_wallet_data(self, pool_config, wallet_address):
+        scraper = MetricsScraper(self.logger)
+        wallet_data = scraper.scrape_metrics(pool_config, wallet_address)
+
+        return wallet_data
+
 if __name__ == '__main__':
     w = Winty("Winty")
-    w.scrape_data()
+    w.run()
