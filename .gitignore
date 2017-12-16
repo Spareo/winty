@@ -105,4 +105,5 @@ ENV/
 .DS_Store
 
 # log
+logs/
 winty_log

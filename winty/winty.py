@@ -14,10 +14,14 @@ class Winty(object):
 
     def setup_logger(self):
         logger = logging.getLogger(__name__)
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.ERROR)
 
         # create a file handler
-        handler = TimedRotatingFileHandler('winty_log',  when='midnight')
+        log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+            
+        handler = TimedRotatingFileHandler(os.path.join(log_dir,'winty.log'),  when='midnight')
         handler.setLevel(logging.INFO)
 
         # create a logging format
