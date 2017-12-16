@@ -15,7 +15,7 @@ class MetricsScraper(object):
                 self.logger.debug("Retrieved wallet page for %s", wallet_address)
                 if pool_config['is_yiimp']:
                     scraper = yiimp_scraper.YiimpScraper(self.logger)
-                    wallet = scraper.scrape_wallet_data(r.content)
+                    wallet = scraper.scrape_wallet_data(r.text, pool_config)
             else:
                 self.logger.error("Failed to retrieve wallet page from %s for wallet %s", pool_config['name'], wallet_address)
 

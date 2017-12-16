@@ -40,7 +40,7 @@ class Winty(object):
 
         for config in pool_configs.values():
             for wallet in wallets:
-                
+     
                 if config['datasource'] == "rest":
                     data = self.get_wallet_data(config, wallet)
                 else:

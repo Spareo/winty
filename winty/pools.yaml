@@ -25,6 +25,7 @@ zpool:
   format: 24H
   datasource: scrape
   is_yiimp: true
+  regex: Balance.*?(?P<balance>\d\.\d+)\sBTC.*?Unpaid.*?(?P<unpaid>\d\.\d+)\sBTC.*?Total Paid.*?(?P<paid>\d\.\d+)\sBTC.*?Total Earned.*?(?P<total>\d\.\d+)\sBTC
 hashrefinery:
   name: HashRefinery
   endpoint: http://pool.hashrefinery.com/api/wallet?address={walletAddress}
@@ -39,3 +40,4 @@ hashrefinery:
   format: 24H
   datasource: scrape
   is_yiimp: true
+  regex: Balance.*?(?P<balance>\d\.\d+)\sBTC.*?Unpaid.*?(?P<unpaid>\d\.\d+)\sBTC.*?Total Paid.*?(?P<paid>\d\.\d+)\sBTC.*?Total Earned.*?(?P<total>\d\.\d+)\sBTC
