@@ -35,12 +35,13 @@ class Winty(object):
 
 
     def run(self):
+        logger.info("Winty run started...")
         pool_configs = self.read_pools_config(os.path.dirname(os.path.abspath(__file__)) + '/pools.yaml')
         wallets = self.read_wallet_addresses(os.path.dirname(os.path.abspath(__file__)) + '/wallets.yaml')
 
         for config in pool_configs.values():
             for wallet in wallets:
-     
+                
                 if config['datasource'] == "rest":
                     data = self.get_wallet_data(config, wallet)
                 else:
@@ -57,6 +58,7 @@ class Winty(object):
                 tags_dict['format'] = config['format']
                 tags_dict['pool'] = config['name']
 
+                logger.info("Pushing metrics for {}".format(config['name']))
                 self.metricsHandler.write_metric(self.name, values_dict, tags_dict)
 
 
