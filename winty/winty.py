@@ -14,7 +14,7 @@ class Winty(object):
 
     def setup_logger(self):
         logger = logging.getLogger(__name__)
-        logger.setLevel(logging.ERROR)
+        logger.setLevel(logging.INFO)
 
         # create a file handler
         log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
