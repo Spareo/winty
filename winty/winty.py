@@ -60,7 +60,7 @@ class Winty(object):
 
                 self.logger.info("Pushing metrics for {}".format(config['name']))
                 self.metricsHandler.write_metric(self.name, values_dict, tags_dict)
-
+        self.logger.info("Winty finished.")
 
     def read_pools_config(self, filepath):
         try:
