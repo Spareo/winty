@@ -8,7 +8,7 @@ class MetricsScraper(object):
     def scrape_metrics(self, pool_config, wallet_address):
         wallet = None
         wallet_page_url = pool_config['wallet_page'].format(walletAddress=wallet_address)
-        r = requests.get(wallet_page_url)
+        r = requests.get(wallet_page_url, timeout=10)
         try:
             pool_name = pool_config['name'].lower()
             if r.status_code == 200:

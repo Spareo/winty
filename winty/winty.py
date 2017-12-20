@@ -51,15 +51,19 @@ class Winty(object):
                 tags_dict = {}
 
                 # Set the metric name to use the value from the fields dictionary in pools.yaml
-                for (metric_name, metric_value) in data.items():
-                    if metric_name in config['fields']:
-                        values_dict[config['fields'][metric_name]] = metric_value
+                if data is not None:
+                    for (metric_name, metric_value) in data.items():
+                        if metric_name in config['fields']:
+                            values_dict[config['fields'][metric_name]] = metric_value
 
-                tags_dict['format'] = config['format']
-                tags_dict['pool'] = config['name']
+                    tags_dict['format'] = config['format']
+                    tags_dict['pool'] = config['name']
+                    tags_dict['wallet'] = wallet
 
-                self.logger.info("Pushing metrics for {}".format(config['name']))
-                self.metricsHandler.write_metric(self.name, values_dict, tags_dict)
+                    self.logger.info("Pushing metrics for {}".format(config['name']))
+                    self.metricsHandler.write_metric(self.name, values_dict, tags_dict)
+                else:
+                    self.logger.info("Wallet " + wallet + " has no data for " + config['name'] +".")
         self.logger.info("Winty finished.")
 
     def read_pools_config(self, filepath):
@@ -82,7 +86,7 @@ class Winty(object):
 
     def get_wallet_data(self, pool_config, wallet_address):
         wallet = None
-        r = requests.get(pool_config['endpoint'].format(walletAddress=wallet_address))
+        r = requests.get(pool_config['endpoint'].format(walletAddress=wallet_address), timeout=10)
         try:
             if r.status_code == 200:
                 self.logger.debug("Retrieved wallet for %s", wallet_address)
