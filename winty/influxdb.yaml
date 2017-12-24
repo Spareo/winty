@@ -1,5 +1,5 @@
 configuration:
-  host: localhost
+  host: ec2-34-227-172-174.compute-1.amazonaws.com
   port: 8086
   username: root
   password: root

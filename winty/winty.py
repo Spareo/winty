@@ -41,29 +41,27 @@ class Winty(object):
 
         for config in pool_configs.values():
             for wallet in wallets:
-                
-                if config['datasource'] == "rest":
-                    data = self.get_wallet_data(config, wallet)
-                else:
-                    data = self.scrape_wallet_data(config, wallet)
-
-                values_dict = {}
                 tags_dict = {}
+                tags_dict['format'] = config['format']
+                tags_dict['pool'] = config['name']
+                tags_dict['wallet'] = wallet
+                for measurement in config['measurements']:  
+                    if measurement['datasource'] == "rest":
+                        data = self.get_data_through_rest(measurement, measurement['fields'], config['name'], wallet)
+                    else:
+                        data = self.get_data_through_scraping(config, measurement, wallet)
 
-                # Set the metric name to use the value from the fields dictionary in pools.yaml
-                if data is not None:
-                    for (metric_name, metric_value) in data.items():
-                        if metric_name in config['fields']:
-                            values_dict[config['fields'][metric_name]] = metric_value
-
-                    tags_dict['format'] = config['format']
-                    tags_dict['pool'] = config['name']
-                    tags_dict['wallet'] = wallet
-
-                    self.logger.info("Pushing metrics for {}".format(config['name']))
-                    self.metricsHandler.write_metric(self.name, values_dict, tags_dict)
-                else:
-                    self.logger.info("Wallet " + wallet + " has no data for " + config['name'] +".")
+                    # Set the metric name to use the value from the fields dictionary in pools.yaml
+                    if data is not None:
+                        if measurement['name'] == "wallet":
+                            self.create_values_and_push(config['name'], measurement, tags_dict, data)
+                        elif measurement['name'] == "miners":
+                            for miner in data['miners']:
+                                self.create_values_and_push(config['name'], measurement, tags_dict, miner)
+                    else:
+                        self.logger.info("Wallet " + wallet + " has no data for " + config['name'] + ".")
+                
+                    
         self.logger.info("Winty finished.")
 
     def read_pools_config(self, filepath):
@@ -84,17 +82,18 @@ class Winty(object):
             self.logger.error('Failed to open file', exc_info=True)
 
 
-    def get_wallet_data(self, pool_config, wallet_address):
+    def get_data_through_rest(self, endpoint_config, fields, pool_name, wallet_address):
         wallet = None
-        r = requests.get(pool_config['endpoint'].format(walletAddress=wallet_address), timeout=10)
+
+        r = requests.get(endpoint_config['rest'].format(walletAddress=wallet_address), timeout=10)
         try:
             if r.status_code == 200:
                 self.logger.debug("Retrieved wallet for %s", wallet_address)
                 wallet = r.json()
             else:
-                self.logger.error("Failed to retrieve wallet data from %s for wallet %s", pool_config['name'], wallet_address)
+                self.logger.error("Failed to retrieve wallet data from %s for wallet %s", pool_name, wallet_address)
 
-            wallet = {key: value for (key, value) in wallet.items() if key in pool_config['fields'].keys()}
+            wallet = {key: value for (key, value) in wallet.items() if key in fields.keys()}
         except Exception as e:
             # No need to do anything, just let the job run again next time
             pass
@@ -102,11 +101,22 @@ class Winty(object):
         return wallet
 
 
-    def scrape_wallet_data(self, pool_config, wallet_address):
+    def get_data_through_scraping(self, pool_config, measurement, wallet_address):
         scraper = MetricsScraper(self.logger)
-        wallet_data = scraper.scrape_metrics(pool_config, wallet_address)
+        wallet_data = scraper.scrape_metrics(pool_config['name'], measurement, wallet_address, pool_config['is_yiimp'])
 
         return wallet_data
+
+
+    def create_values_and_push(self, pool_name, measurement, tags_dict, data):
+        values_dict = {}
+        for (metric_name, metric_value) in data.items():
+            if metric_name in measurement['fields'] and measurement['fields'][metric_name]:
+                values_dict[measurement['fields'][metric_name]] = metric_value
+
+        self.logger.info("Pushing metrics for {}".format(pool_name))
+        self.metricsHandler.write_metric(measurement['name'], values_dict, tags_dict)
+
 
 if __name__ == '__main__':
     w = Winty("Winty")
