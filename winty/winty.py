@@ -56,7 +56,16 @@ class Winty(object):
                         if measurement['name'] == "wallet":
                             self.create_values_and_push(config['name'], measurement, tags_dict, data)
                         elif measurement['name'] == "miners":
-                            for miner in data['miners']:
+                            for miner in data[0]['miners']:
+                                tags_dict['algo'] = miner.pop('algo')
+                                miner['accepted'] = round(miner['accepted'], 4)
+                                miner['rejected'] = round(miner['rejected'], 4)
+                                miner['difficulty'] = round(miner['difficulty'])
+                                if "," in miner['password']:
+                                    split_password = miner['password'].split(",")
+                                    miner.pop('password')
+                                    miner['currency'] = split_password[0].lstrip("c=")
+                                    miner['password'] = split_password[1]
                                 self.create_values_and_push(config['name'], measurement, tags_dict, miner)
                     else:
                         self.logger.info("Wallet " + wallet + " has no data for " + config['name'] + ".")
@@ -84,6 +93,7 @@ class Winty(object):
 
     def get_data_through_rest(self, endpoint_config, fields, pool_name, wallet_address):
         wallet = None
+        wallet_data = None
 
         r = requests.get(endpoint_config['rest'].format(walletAddress=wallet_address), timeout=10)
         try:
@@ -93,12 +103,24 @@ class Winty(object):
             else:
                 self.logger.error("Failed to retrieve wallet data from %s for wallet %s", pool_name, wallet_address)
 
-            wallet = {key: value for (key, value) in wallet.items() if key in fields.keys()}
+            if endpoint_config['name'] == 'miners':
+                wallet_data = []
+                wallet_data.append({
+                    'miners': [
+                        {
+                            key: value for (key, value) in miners.items() if key in fields.keys()
+                        }
+                        for miners in wallet['miners']
+                    ]
+                })
+            else:
+                wallet_data = {key: value for (key, value) in wallet.items() if key in fields.keys()}
         except Exception as e:
             # No need to do anything, just let the job run again next time
+            self.logger.error(e)
             pass
 
-        return wallet
+        return wallet_data
 
 
     def get_data_through_scraping(self, pool_config, measurement, wallet_address):
@@ -112,10 +134,14 @@ class Winty(object):
         values_dict = {}
         for (metric_name, metric_value) in data.items():
             if metric_name in measurement['fields'] and measurement['fields'][metric_name]:
-                values_dict[measurement['fields'][metric_name]] = metric_value
+                if metric_value != 0:
+                    values_dict[measurement['fields'][metric_name]] = metric_value
 
         self.logger.info("Pushing metrics for {}".format(pool_name))
-        self.metricsHandler.write_metric(measurement['name'], values_dict, tags_dict)
+        if measurement['name'] == 'wallet':
+            self.metricsHandler.write_metric(self.name, values_dict, tags_dict)
+        else:
+            self.metricsHandler.write_metric(measurement['name'], values_dict, tags_dict)
 
 
 if __name__ == '__main__':

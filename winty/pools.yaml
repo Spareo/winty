@@ -17,11 +17,15 @@ ahashpool:
       name: miners
       rest: http://www.ahashpool.com/api/walletEx?address={walletAddress}
       scrape: https://www.ahashpool.com/wallet_wallet_miners_results.php?wallet={walletAddress}
-      datasource: scrape
+      datasource: rest
       fields:
-        miners: active_miners
         accepted: accepted_shares
         rejected: rejected_shares
+        algo: algo
+        password: rig
+        version: minerprog
+        difficulty: difficulty
+        currency: mined_currency
   format: 24H
   is_yiimp: true
 zpool:
@@ -39,14 +43,19 @@ zpool:
         balance: current_balance
         total_unpaid: total_unpaid
         total_earned: total_earned
+        currency: mined_currency
     -
       name: miners
       rest: http://www.zpool.ca/api/walletEx?address={walletAddress}
       datasource: rest
       fields:
-        miners: active_miners
         accepted: accepted_shares
         rejected: rejected_shares
+        algo: algo
+        password: rig
+        version: minerprog
+        difficulty: difficulty
+        currency: mined_currency
   format: 24H
   is_yiimp: true
 hashrefinery:
@@ -64,15 +73,18 @@ hashrefinery:
         balance: current_balance
         total_unpaid: total_unpaid
         total_earned: total_earned
+        currency: mined_currency
     -
       name: miners
       rest: http://pool.hashrefinery.com/api/walletEx?address={walletAddress}
-      scrape: http://pool.hashrefinery.com/site/wallet_miners_results?address={walletAddress}
-      regex: (?P<wallet>[A-z0-9]+).*?Details.*?Reject\*(?:.*?\"right\"\>(?P<a1>[0-9]+).*?title=\"(?P<a1_miner>\S+?)\".*?title=\"(?:c=(?P<a1_cur>[A-z]+),)?(?:(?P<a1_rig>\S+?)\").*?\<td\>(?P<a1_algo>[A-z0-9]+)\<\/td\>.*?right\"\>(?P<a1_diff>[0-9]+).*?(?P<a1_hashrate>[0-9]+ (?:Gh\/s|Mh\/s|Kh\/s|Th\/s)).*?(?:\>(?P<a1_rejected>[0-9]+)\<)?)?(?:.*?\"right\"\>(?P<a2>[0-9]+).*?title=\"(?P<a2_miner>\S+?)\".*?title=\"(?:c=(?P<a2_cur>[A-z]+),)?(?:(?P<a2_rig>\S+?)\").*?\<td\>(?P<a2_algo>[A-z0-9]+)\<\/td\>.*?right\"\>(?P<a2_diff>[0-9]+).*?(?P<a2_hashrate>[0-9]+ (?:Gh\/s|Mh\/s|Kh\/s|Th\/s)).*?(?:\>(?P<a2_rejected>[0-9]+)\<)?)?(?:.*?\"right\"\>(?P<a3>[0-9]+).*?title=\"(?P<a3_miner>\S+?)\".*?title=\"(?:c=(?P<a3_cur>[A-z]+),)?(?:(?P<a3_rig>\S+?)\").*?\<td\>(?P<a3_algo>[A-z0-9]+)\<\/td\>.*?right\"\>(?P<a3_diff>[0-9]+).*?(?P<a3_hashrate>[0-9]+ (?:Gh\/s|Mh\/s|Kh\/s|Th\/s)).*?(?:\>(?:<a3_rejected>[0-9]+)\<)?)?
-      datasource: scrape
+      datasource: rest
       fields:
-        miners: active_miners
         accepted: accepted_shares
         rejected: rejected_shares
+        algo: algo
+        password: rig
+        version: minerprog
+        difficulty: difficulty
+        currency: mined_currency
   format: 24H
   is_yiimp: true
