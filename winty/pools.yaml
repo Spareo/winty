@@ -1,43 +1,90 @@
 ahashpool:
   name: AHashPool
-  endpoint: http://www.ahashpool.com/api/wallet?address={walletAddress}
-  wallet_page: https://ahashpool.com/wallet_wallet_results.php?wallet={walletAddress}
-  fields:
-    unsold: total_unsold
-    total_paid: total_paid
-    balance: current_balance
-    total_unpaid: total_unpaid
-    total_earned: total_earned
+  measurements:
+    - 
+      name: wallet
+      rest: http://www.ahashpool.com/api/wallet?address={walletAddress}
+      scrape: https://ahashpool.com/wallet_wallet_results.php?wallet={walletAddress}
+      regex: 
+      datasource: rest
+      fields:
+        unsold: total_unsold
+        total_paid: total_paid
+        balance: current_balance
+        total_unpaid: total_unpaid
+        total_earned: total_earned
+    -
+      name: miners
+      rest: http://www.ahashpool.com/api/walletEx?address={walletAddress}
+      scrape: https://www.ahashpool.com/wallet_wallet_miners_results.php?wallet={walletAddress}
+      datasource: rest
+      fields:
+        accepted: accepted_shares
+        rejected: rejected_shares
+        algo: algo
+        password: rig
+        version: minerprog
+        difficulty: difficulty
+        currency: mined_currency
   format: 24H
-  datasource: rest
   is_yiimp: true
 zpool:
   name: ZPool
-  endpoint: http://www.zpool.ca/api/wallet?address={walletAddress}
-  wallet_page: http://zpool.ca/site/wallet_results?address={walletAddress}
-  fields:
-    unsold: total_unsold
-    paid: total_paid
-    balance: current_balance
-    unpaid: total_unpaid
-    paid24h: paid24h
-    total: total_earned
+  measurements:
+    -
+      name: wallet
+      rest: http://www.zpool.ca/api/wallet?address={walletAddress}
+      scrape: http://zpool.ca/site/wallet_results?address={walletAddress}
+      regex: Balance.*?(?P<balance>\d\.\d+)\sBTC.*?Unpaid.*?(?P<unpaid>\d\.\d+)\sBTC.*?Total Paid.*?(?P<paid>\d\.\d+)\sBTC.*?Total Earned.*?(?P<total>\d\.\d+)\sBTC
+      datasource: scrape
+      fields:
+        unsold: total_unsold
+        total_paid: total_paid
+        balance: current_balance
+        total_unpaid: total_unpaid
+        total_earned: total_earned
+        currency: mined_currency
+    -
+      name: miners
+      rest: http://www.zpool.ca/api/walletEx?address={walletAddress}
+      datasource: rest
+      fields:
+        accepted: accepted_shares
+        rejected: rejected_shares
+        algo: algo
+        password: rig
+        version: minerprog
+        difficulty: difficulty
+        currency: mined_currency
   format: 24H
-  datasource: scrape
   is_yiimp: true
-  regex: Balance.*?(?P<balance>\d\.\d+)\sBTC.*?Unpaid.*?(?P<unpaid>\d\.\d+)\sBTC.*?Total Paid.*?(?P<paid>\d\.\d+)\sBTC.*?Total Earned.*?(?P<total>\d\.\d+)\sBTC
 hashrefinery:
   name: HashRefinery
-  endpoint: http://pool.hashrefinery.com/api/wallet?address={walletAddress}
-  wallet_page: http://pool.hashrefinery.com/site/wallet_results?address={walletAddress}
-  fields:
-    unsold: total_unsold
-    paid: total_paid
-    balance: current_balance
-    unpaid: total_unpaid
-    paid24h: paid24h
-    total: total_earned
+  measurements:
+    -
+      name: wallet
+      rest: http://pool.hashrefinery.com/api/wallet?address={walletAddress}
+      scrape: http://pool.hashrefinery.com/site/wallet_results?address={walletAddress}       
+      regex: Balance.*?(?P<balance>\d\.\d+)\sBTC.*?Unpaid.*?(?P<unpaid>\d\.\d+)\sBTC.*?Total Paid.*?(?P<paid>\d\.\d+)\sBTC.*?Total Earned.*?(?P<total>\d\.\d+)\sBTC
+      datasource: scrape
+      fields:
+        unsold: total_unsold
+        total_paid: total_paid
+        balance: current_balance
+        total_unpaid: total_unpaid
+        total_earned: total_earned
+        currency: mined_currency
+    -
+      name: miners
+      rest: http://pool.hashrefinery.com/api/walletEx?address={walletAddress}
+      datasource: rest
+      fields:
+        accepted: accepted_shares
+        rejected: rejected_shares
+        algo: algo
+        password: rig
+        version: minerprog
+        difficulty: difficulty
+        currency: mined_currency
   format: 24H
-  datasource: scrape
   is_yiimp: true
-  regex: Balance.*?(?P<balance>\d\.\d+)\sBTC.*?Unpaid.*?(?P<unpaid>\d\.\d+)\sBTC.*?Total Paid.*?(?P<paid>\d\.\d+)\sBTC.*?Total Earned.*?(?P<total>\d\.\d+)\sBTC
