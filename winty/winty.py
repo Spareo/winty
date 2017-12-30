@@ -58,14 +58,17 @@ class Winty(object):
                         elif measurement['name'] == "miners":
                             for miner in data[0]['miners']:
                                 tags_dict['algo'] = miner.pop('algo')
-                                miner['accepted'] = round(miner['accepted'], 4)
-                                miner['rejected'] = round(miner['rejected'], 4)
-                                miner['difficulty'] = round(miner['difficulty'])
+                                tags_dict['miner_program'] = miner.pop('version')
+                                miner['accepted'] = float(miner['accepted'])
+                                miner['rejected'] = float(miner['rejected'])
+                                miner['difficulty'] = float(miner['difficulty'])
                                 if "," in miner['password']:
                                     split_password = miner['password'].split(",")
                                     miner.pop('password')
                                     miner['currency'] = split_password[0].lstrip("c=")
+                                    tags_dict['mined_currency'] = miner.pop('currency')
                                     miner['password'] = split_password[1]
+                                    tags_dict['rig'] = miner.pop('password')
                                 self.create_values_and_push(config['name'], measurement, tags_dict, miner)
                     else:
                         self.logger.info("Wallet " + wallet + " has no data for " + config['name'] + ".")
@@ -134,10 +137,7 @@ class Winty(object):
         values_dict = {}
         for (metric_name, metric_value) in data.items():
             if metric_name in measurement['fields'] and measurement['fields'][metric_name]:
-                if metric_value == 0:
-                    values_dict[measurement['fields'][metric_name]] = 0.0
-                else:
-                    values_dict[measurement['fields'][metric_name]] = metric_value
+                values_dict[measurement['fields'][metric_name]] = metric_value
 
         self.logger.info("Pushing metrics for {}".format(pool_name))
         if measurement['name'] == 'wallet':
