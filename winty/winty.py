@@ -57,7 +57,7 @@ class Winty(object):
                             self.create_values_and_push(config['name'], measurement, tags_dict, data)
                         elif measurement['name'] == "miners":
                             for miner in data[0]['miners']:
-                                tags_dict['algo'] = miner.pop('algo')
+                                tags_dict['algo_tag'] = miner['algo']
                                 tags_dict['miner_program'] = miner.pop('version')
                                 miner['accepted'] = float(miner['accepted'])
                                 miner['rejected'] = float(miner['rejected'])
