@@ -69,10 +69,10 @@ hashrefinery:
       datasource: scrape
       fields:
         unsold: total_unsold
-        total_paid: total_paid
+        paid: total_paid
         balance: current_balance
-        total_unpaid: total_unpaid
-        total_earned: total_earned
+        unpaid: total_unpaid
+        total: total_earned
         currency: mined_currency
     -
       name: miners

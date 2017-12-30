@@ -134,7 +134,9 @@ class Winty(object):
         values_dict = {}
         for (metric_name, metric_value) in data.items():
             if metric_name in measurement['fields'] and measurement['fields'][metric_name]:
-                if metric_value != 0:
+                if metric_value == 0:
+                    values_dict[measurement['fields'][metric_name]] = 0.0
+                else:
                     values_dict[measurement['fields'][metric_name]] = metric_value
 
         self.logger.info("Pushing metrics for {}".format(pool_name))
