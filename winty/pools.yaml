@@ -28,6 +28,36 @@ ahashpool:
         currency: mined_currency
   format: 24H
   is_yiimp: true
+zergpool:
+  name: ZergPool
+  measurements:
+    - 
+      name: wallet
+      rest: http://zergpool.com/api/wallet?address={walletAddress}
+      scrape: http://zergpool.com/site/wallet_results?address={walletAddress}
+      regex: Balance.*?(?P<balance>\d\.\d+)\sBTC.*?Unpaid.*?(?P<unpaid>\d\.\d+)\sBTC.*?Total Paid.*?(?P<paid>\d\.\d+)\sBTC.*?Total Earned.*?(?P<total>\d\.\d+)\sBTC
+      datasource: scape
+      fields:
+        unsold: total_unsold
+        total_paid: total_paid
+        balance: current_balance
+        unpaid: total_unpaid
+        total: total_earned
+    -
+      name: miners
+      rest: http://zergpool.com/api/walletEx?address={walletAddress}
+      scrape:
+      datasource: rest
+      fields:
+        accepted: accepted_shares
+        rejected: rejected_shares
+        algo: algo
+        password: rig
+        version: minerprog
+        difficulty: difficulty
+        currency: mined_currency
+  format: 24H
+  is_yiimp: true
 zpool:
   name: ZPool
   measurements:
@@ -88,3 +118,30 @@ hashrefinery:
         currency: mined_currency
   format: 24H
   is_yiimp: true
+#nicehash:
+#  name: NiceHash
+#  measurements:
+#    -
+#      name: wallet
+#      rest: http://pool.hashrefinery.com/api/wallet?address={walletAddress}
+#      fields:
+#        unsold: total_unsold
+#        paid: total_paid
+#        balance: current_balance
+#        unpaid: total_unpaid
+#        total: total_earned
+#        currency: mined_currency
+#    -
+#      name: miners
+#      rest: http://pool.hashrefinery.com/api/walletEx?address={walletAddress}
+#      fields:
+#        accepted: accepted_shares
+#        rejected: rejected_shares
+#        algo: algo
+#        password: rig
+#        version: minerprog
+#        difficulty: difficulty
+#        currency: mined_currency
+#  format: 24H
+#  is_yiimp: false
+#

@@ -59,9 +59,6 @@ class Winty(object):
                             for miner in data[0]['miners']:
                                 tags_dict['algo_tag'] = miner['algo']
                                 tags_dict['miner_program'] = miner.pop('version')
-                                miner['accepted'] = float(miner['accepted'])
-                                miner['rejected'] = float(miner['rejected'])
-                                miner['difficulty'] = float(miner['difficulty'])
                                 if "," in miner['password']:
                                     split_password = miner['password'].split(",")
                                     miner.pop('password')
@@ -137,7 +134,10 @@ class Winty(object):
         values_dict = {}
         for (metric_name, metric_value) in data.items():
             if metric_name in measurement['fields'] and measurement['fields'][metric_name]:
-                values_dict[measurement['fields'][metric_name]] = metric_value
+                if isinstance(metric_value, int):
+                    values_dict[measurement['fields'][metric_name]] = float(metric_value)
+                else:
+                     values_dict[measurement['fields'][metric_name]] = metric_value
 
         self.logger.info("Pushing metrics for {}".format(pool_name))
         if measurement['name'] == 'wallet':
